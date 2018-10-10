@@ -81,5 +81,25 @@ openssh-clients
 -wpa_supplicant
 %end
 
-%post
+%post --erroronfail
+#
+# Setup console
+cat > /etc/init/ttyS0.conf <<EOF
+stop on runlevel[016]
+start on runlevel[345]
+respawn
+instance /dev/ttyS0
+exec /sbin/mingetty /dev/ttyS0
+EOF
+
+sed -i 's/rhgb quiet//' /boot/grub/grub.conf
+sed -i 's/hiddenmenu//' /boot/grub/grub.conf
+sed -i 's/splashimage.*//' /boot/grub/grub.conf
+##### GCE Config
+sudo ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+rm -f /etc/udev/rules.d/70-persistent-net.rules
+#
+# Disable zeroconf
+echo "NOZEROCONF=yes" >> /etc/sysconfig/network
+
 %end
