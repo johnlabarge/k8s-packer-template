@@ -1,89 +1,83 @@
 install
-text
-
-cdrom
-
-lang en_US.UTF-8
 keyboard us
+rootpw --lock --iscrypted locked
+timezone --isUtc --nontp UTC
+selinux --enforcing
+firewall --disabled
+network --bootproto=dhcp --device=link --activate --onboot=on
+shutdown
+bootloader --disable
+lang en_US
 
-network --onboot yes --bootproto dhcp --noipv6
+# Repositories to use
+repo --name="CentOS" --baseurl=http://mirror.centos.org/centos/7/os/x86_64/ --cost=100
+## Uncomment for rolling builds
+repo --name="Updates" --baseurl=http://mirror.centos.org/centos/7/updates/x86_64/ --cost=100
 
-timezone --utc UTC
-
+# Disk setup
 zerombr
 clearpart --all --initlabel
-bootloader --location=mbr
+part / --size 3000 --fstype ext4
 
-# If you want swap and LVM, uncomment the following 5 lines
-# and comment the lone part command below.
-#part /boot --fstype=ext3 --size=256
-#part pv.01 --size=1024 --grow
-#volgroup vg_root pv.01
-#logvol swap --fstype swap --name=lv_swap --vgname=vg_root --size=256
-#logvol / --fstype=ext4 --name=lv_root --vgname=vg_root --size=1024 --grow
+# Package setup
+%packages --excludedocs --instLangs=en --nocore
+bind-utils
+bash
+yum
+vim-minimal
+centos-release
+less
+-kernel*
+-*firmware
+-firewalld-filesystem
+-os-prober
+-gettext*
+-GeoIP
+-bind-license
+-freetype
+iputils
+iproute
+systemd
+rootfiles
+-libteam
+-teamd
+tar
+passwd
+yum-utils
+yum-plugin-ovl
 
-part / --fstype=ext4 --size=1024 --grow
-
-authconfig --enableshadow --passalgo=sha512
-
-rootpw changeme
-
-firewall --disabled
-selinux --disabled
-
-services --disabled=NetworkManager,kdump --enabled=network,sshd
-
-skipx
-
-reboot
-
-%packages --nobase
-@core
-openssh-server
-openssh-clients
--aic94xx-firmware
--alsa-firmware
--alsa-tools-firmware
--alsa-lib
--biosdevname
--btrfs-progs
--cronie-anacron
--cronie
--crontabs
--ivtv-firmware
--iwl5000-firmware
--iwl6000g2b-firmware
--iwl7260-firmware
--iwl6050-firmware
--iwl135-firmware
--iwl105-firmware
--iwl1000-firmware
--iwl5150-firmware
--iwl4965-firmware
--iwl3160-firmware
--iwl3945-firmware
--iwl6000g2a-firmware
--iwl2030-firmware
--iwl100-firmware
--iwl6000-firmware
--iwl2000-firmware
--kexec-tools
--libertas-sd8787-firmware
--libertas-usb8388-firmware
--libertas-sd8686-firmware
--ModemManager-glib
--NetworkManager
--NetworkManager-glib
--NetworkManager-tui
--NetworkManager-wifi
--plymouth-scripts
--postfix
--wpa_supplicant
 %end
 
 %post --erroronfail
 #
 # Setup console
+
+rpm -e kernel
+
+yum -y remove bind-libs bind-libs-lite dhclient dhcp-common dhcp-libs \
+  dracut-network e2fsprogs e2fsprogs-libs ebtables ethtool file \
+  firewalld freetype gettext gettext-libs groff-base grub2 grub2-tools \
+  grubby initscripts iproute iptables kexec-tools libcroco libgomp \
+  libmnl libnetfilter_conntrack libnfnetlink libselinux-python lzo \
+  libunistring os-prober python-decorator python-slip python-slip-dbus \
+  snappy sysvinit-tools which linux-firmware GeoIP firewalld-filesystem \
+  qemu-guest-agent
+
+yum clean all
+
+#clean up unused directories
+rm -rf /boot
+rm -rf /etc/firewalld
+
+passwd -l root
+
+awk '(NF==0&&!done){print "override_install_langs=en_US.utf8\ntsflags=nodocs";done=1}{print}' \
+    < /etc/yum.conf > /etc/yum.conf.new
+mv /etc/yum.conf.new /etc/yum.conf
+echo 'container' > /etc/yum/vars/infra
+
+
+
 cat > /etc/init/ttyS0.conf <<EOF
 stop on runlevel[016]
 start on runlevel[345]
@@ -101,5 +95,33 @@ rm -f /etc/udev/rules.d/70-persistent-net.rules
 #
 # Disable zeroconf
 echo "NOZEROCONF=yes" >> /etc/sysconfig/network
+cat <<SSHD >/etc/ssh/sshd_config
+Host *
+Protocol 2
+ForwardAgent no
+ForwardX11 no
+HostbasedAuthentication no
+StrictHostKeyChecking no
+Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc
+Tunnel no
+
+# Google Compute Engine times out connections after 10 minutes of inactivity.
+# Keep alive ssh connections by sending a packet every 7 minutes.
+ServerAliveInterval 420
+
+# Disable PasswordAuthentication as ssh keys are more secure.
+PasswordAuthentication no
+
+# Disable root login, using sudo provides better auditing.
+PermitRootLogin no
+
+PermitTunnel no
+AllowTcpForwarding yes
+X11Forwarding no
+
+# Compute times out connections after 10 minutes of inactivity.  Keep alive
+# ssh connections by sending a packet every 7 minutes.
+ClientAliveInterval 420
+SSHD
 
 %end
