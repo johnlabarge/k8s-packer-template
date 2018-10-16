@@ -1,17 +1,15 @@
 #!/bin/sh 
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
-#Ensure MAC isn't persisted
-
-ln -s /dev/null /etc/udev/rules.d/75-persistent-net-generator.rules
-sed -i '/^\(HWADDR\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
-
 #Remove rhgb and quiet from kernel command line 
 sed -i -e $'/rhgb/s/rhgb//' /etc/default/grub
 sed -i -e $'/quiet/s/quiet//' /etc/default/grub 
 #add console to kernel command line 
-sed -i -e $'/GRUB_CMDLINE_LINUX/s/"$/ console=ttyS0,38400n8d"/' /etc/default/grub
-
+#sed -i -e $'/GRUB_CMDLINE_LINUX/s/=".*$/="console=ttyS0,38400n8d"/' /etc/default/grub
+sed -i -e $'/GRUB_CMDLINE_LINUX/s/=".*$/="serial=tty0 console=ttyS0,38400n8d"/' /etc/default/grub
+echo 'GRUB_TERMINAL="serial"' >> /etc/default/grub
+echo 'GRUB_SERIAL_COMMAND="serial --speed=19200 --unit=0 --word=8 --parity=no --stop=1"' >> /etc/default/grub 
+grub-mkconfig -o /boot/grub/grub.cfg
 
 ## We have to update our images before we install yum-cron otherwise our changes
 ## will get clobbered when yum updates.
@@ -41,9 +39,6 @@ dracut -f
 #
 ## Disable IPv6 for Yum.
 echo "ip_resolve=4" >> /etc/yum.conf
-#
-## Remove files which shouldn't make it into the image.
-rm -f /etc/boto.cfg /etc/udev/rules.d/70-persistent-net.rules
 #
 ## Ensure no attempt will be made to persist network MAC addresses.
 ln -s /dev/null /etc/udev/rules.d/75-persistent-net-generator.rules

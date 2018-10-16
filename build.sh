@@ -28,11 +28,11 @@ openssl rsa -in \
 
 NEWUSER='provisioner'
 cat <<EOF >add-provisioner-user.sh
-SSH_PUBLIC_KEY="\'$(cat provisioner.pub)\'"
+SSH_PUBLIC_KEY="$(cat provisioner.pub)"
 adduser ${NEWUSER}
 su - ${NEWUSER} -c \
     "umask 022; mkdir .ssh; \ 
-     echo $SSH_PUBLIC_KEY >> \
+     echo \$SSH_PUBLIC_KEY >> \
      .ssh/authorized_keys" 
 usermod -a -G wheel ${NEWUSER}
 EOF
@@ -54,7 +54,6 @@ fi
 ###############################################
 echo "Uploading partially provisioned image to GCP" 
 cd output
-mv *image disk.raw
 #TAG TODO REPLACE THIS WITH THE TAG 
 TAG=$(date +%H%M)
 FILENAME=centos-testv${TAG}.tar.gz

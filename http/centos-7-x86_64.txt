@@ -3,13 +3,12 @@ text
 cdrom
 lang en_US.UTF-8
 keyboard us
-network --onboot yes --bootproto dhcp --noipv6
+network --onboot yes --bootproto=dhcp --noipv6 --device=eth0
 authconfig --enableshadow --passalgo=sha512
 timezone --utc UTC
-zerombr
 clearpart --all --initlabel
 bootloader --location=mbr 
-part / --size=100 --grow --fsoptions="defaults" --label=/ --fstype=ext4
+part / --size=100 --grow --fsoptions="defaults" --label=/ --fstype=xfs
 
 # Repositories to use
 repo --name="CentOS" --baseurl=http://mirror.centos.org/centos/7/os/x86_64/ --cost=100
@@ -17,16 +16,14 @@ repo --name="CentOS" --baseurl=http://mirror.centos.org/centos/7/os/x86_64/ --co
 #repo --name="Updates" --baseurl=http://mirror.centos.org/centos/7/updates/x86_64/ --cost=100
 repo
 rootpw changeme
-
 firewall --disabled
 selinux --disabled
 
-services --disabled=NetworkManager,kdump --enabled=network,sshd
-
+services --disabled=NetworkManager,kdump --enabled=network,sshd,ntpd
 skipx
 
 reboot
-
+zerombr
 %packages --nobase
 @core
 openssh-server
@@ -84,7 +81,9 @@ vim
 
 %post 
 set -x
-
+rm -f /etc/boto.cfg /etc/udev/rules.d/*persistent-net.rules
+ln -s /dev/null /etc/udev/rules.d/75-persistent-net-generator.rules
+sed -i '/^\(HWADDR\)=/d' /etc/sysconfig/network-scripts/ifcfg-*
 cat >>/etc/dhclient.conf <<EOL
 # Set the dhclient retry interval to 10 seconds instead of 5 minutes.
 retry 10;
@@ -100,6 +99,7 @@ PERSISTENT_DHCLIENT="y"
 IPV6INIT=yes
 EOL
 ## Remove files which shouldn't make it into the image.
-rm -f /etc/boto.cfg /etc/udev/rules.d/70-persistent-net.rules
+rm -f /etc/boto.cfg /etc/udev/rules.d/*-persistent-net.rules
 #
+firewall-offline-cmd --set-default-zone=trusted
 %end
