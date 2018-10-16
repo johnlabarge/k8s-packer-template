@@ -14,16 +14,16 @@ name=Google Cloud Compute
 baseurl=https://packages.cloud.google.com/yum/repos/google-cloud-compute-el${DIST}-x86_64
 enabled=1
 gpgcheck=1
-repo_gpgcheck=0 #Something is off with this repo gpg and can't seem to get passed it
+repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
-yum updateinfo
+sudo yum updateinfo
 declare -a PKG_LIST=(python-google-compute-engine \
 google-compute-engine-oslogin \
 google-compute-engine)
 for pkg in ${PKG_LIST[@]}; do
    sudo yum install -y $pkg
 done
-yum -y update
+sudo yum -y update
 ### END Linux Guest Environment #######
