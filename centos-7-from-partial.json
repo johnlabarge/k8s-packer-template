@@ -1,0 +1,25 @@
+{
+  "builders": [
+    {
+      "image_name": "{{user `image_name`}}",
+      "type": "googlecompute",
+      "project_id": "{{user `project_id`}}",
+      "source_image": "{{user `source_image`}}",
+      "image_family": "{{user `image_family`}}",
+      "zone": "{{user `image_zone`}}",
+      "communicator":"ssh",
+      "ssh_username": "provisioner",
+      "ssh_private_key_file":"{{user `private_key_file`}}",
+      "account_file": "jenkins-sa.json" 
+    }
+  ],
+   "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/linux-guest-environment.sh"
+       ],
+      "execute_command": "sh '{{.Path}}'"
+    }
+   ]
+}
