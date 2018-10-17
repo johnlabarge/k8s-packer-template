@@ -42,7 +42,7 @@
         "execute_command": "sh '{{.Path}}'"
     }
     
-  ]
+  ],
   "post-processors": [
     [
       {
