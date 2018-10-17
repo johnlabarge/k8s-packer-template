@@ -43,4 +43,20 @@
     }
     
   ]
+  "post-processors": [
+    [
+      {
+        "type": "compress",
+        "output": "output/disk.raw.tar.gz"
+      },
+      {
+        "type": "googlecompute-import",
+        "project_id": "{{ user `project`}}",
+        "bucket": "{{user `gcs_bucket`}}",
+        "image_name": "centos-{{user `build_number`}}",
+        "image_description": "centos build",
+        "image_family": "acme-centos"
+      }
+    ]
+  ]
 }
