@@ -44,7 +44,7 @@
     
   ],
   "post-processors": [
-    [
+   [
       {
         "type": "compress",
         "output": "output/disk.raw.tar.gz"
@@ -53,10 +53,22 @@
         "type": "googlecompute-import",
         "project_id": "{{ user `project`}}",
         "bucket": "{{user `gcs_bucket`}}",
-        "image_name": "centos-{{user `build_number`}}",
-        "image_description": "centos build",
+        "image_name": "acme-centos-{{user `build_number`}}-partial",
+        "image_description": "centos nested partial build",
         "image_family": "acme-centos"
+      },
+      { 
+         "type" : "shell-local",
+         "inline": [
+           "-var \"project_id=cloudjlb-packer-tutorial\" \\",
+           "-var \"image_zone={{ user `zone`}}\" \\,
+           "-var \"image_name=acme-centos-{{usser `build_number`}}\" \\",
+           "-var \"source_image=acme-centos-{{user `build_number`}}-partial\" \\",
+           "-var \"provisioner_user=provisioner\" \\",
+           "-var \"provisioner_key=provisioner.pem\" \\",
+           "packerio build *-from-partial.json",
+         ]
       }
-    ]
-  ]
+   ]
+ ]
 }
