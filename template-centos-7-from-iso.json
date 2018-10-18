@@ -66,7 +66,7 @@
            "-var \"source_image=acme-centos-{{user `build_number`}}-partial\" \\",
            "-var \"provisioner_user=provisioner\" \\",
            "-var \"provisioner_key=provisioner.pem\" \\",
-           "packerio build *-from-partial.json",
+           "packerio build *-from-partial.json"
          ]
       }
    ]
