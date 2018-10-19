@@ -60,13 +60,14 @@
       { 
          "type" : "shell-local",
          "inline": [
+           "packerio build ",
            "-var \"project_id=cloudjlb-packer-tutorial\" \\",
            "-var \"image_zone={{ user `zone`}}\" \\",
            "-var \"image_name=acme-centos-{{usser `build_number`}}\" \\",
            "-var \"source_image=acme-centos-{{user `build_number`}}-partial\" \\",
            "-var \"provisioner_user=provisioner\" \\",
            "-var \"provisioner_key=provisioner.pem\" \\",
-           "packerio build *-from-partial.json"
+           "*-from-partial.json"
          ]
       }
    ]
