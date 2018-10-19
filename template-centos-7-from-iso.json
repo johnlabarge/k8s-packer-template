@@ -50,12 +50,12 @@
         "output": "output/disk.raw.tar.gz"
       },
       {
-        "type": "googlecompute-import",
-        "project_id": "{{ user `project`}}",
-        "bucket": "{{user `gcs_bucket`}}",
-        "image_name": "acme-centos-{{user `build_number`}}-partial",
-        "image_description": "centos nested partial build",
-        "image_family": "acme-centos"
+        "type": "shell-local",
+        "inline": [
+         "gsutil cp output/disk.raw.tar.gz {{user `gcs_bucket`}}/{{user `image_family`}}-${BUILD_NUMBER}-partial.tar.gz", 
+         "gcloud compute images create {{user `image_family`}}-${BUILD_NUMBER}-partial \\", 
+         "--source-uri=gs://{{user `gcs_bucket`}}/{{user `image_family"}}-${BUILD_NUMBER}-partial.tar.gz"
+        ]
       },
       { 
          "type" : "shell-local",
