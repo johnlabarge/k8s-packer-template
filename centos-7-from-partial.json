@@ -6,7 +6,7 @@
       "project_id": "{{user `project_id`}}",
       "source_image": "{{user `source_image`}}",
       "image_family": "{{user `image_family`}}",
-      "zone": "{{user `image_zone`}}",
+      "zone": "{{user `zone`}}",
       "communicator":"ssh",
       "ssh_username": "provisioner",
       "ssh_private_key_file":"{{user `private_key_file`}}",
