@@ -60,7 +60,7 @@
       { 
          "type" : "shell-local",
          "inline": [
-           "packerio build ",
+           "packerio build \\",
            "-var \"project_id=cloudjlb-packer-tutorial\" \\",
            "-var \"image_zone={{ user `zone`}}\" \\",
            "-var \"image_name=acme-centos-{{usser `build_number`}}\" \\",
