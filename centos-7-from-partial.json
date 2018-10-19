@@ -9,8 +9,7 @@
       "zone": "{{user `zone`}}",
       "communicator":"ssh",
       "ssh_username": "provisioner",
-      "ssh_private_key_file":"{{user `private_key_file`}}",
-      "account_file": "jenkins-sa.json" 
+      "ssh_private_key_file":"{{user `private_key_file`}}"
     }
   ],
    "provisioners": [
