@@ -8,8 +8,8 @@
       "image_family": "{{user `image_family`}}",
       "zone": "{{user `zone`}}",
       "communicator":"ssh",
-      "ssh_username": "provisioner",
-      "ssh_private_key_file":"{{user `private_key_file`}}"
+      "ssh_username": "{{user `ssh_user`}}",
+      "ssh_private_key_file":"{{user `ssh_key`}}"
     }
   ],
    "provisioners": [
