@@ -40,8 +40,14 @@
         "scripts/gce.sh"
       ],
         "execute_command": "sh '{{.Path}}'"
-    }
-    
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/linux-guest-environment.sh"
+      ],
+      "execute_command": "sh '{{.Path}}'"
+    } 
   ],
   "post-processors": [
    [
