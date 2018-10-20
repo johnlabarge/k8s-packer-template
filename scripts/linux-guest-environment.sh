@@ -32,3 +32,7 @@ for pkg in ${PKG_LIST[@]}; do
 done
 sudo yum -y update
 ### END Linux Guest Environment #######
+
+## Delete the provisioner user
+sudo userdel -f provisioner
+
