@@ -27,13 +27,6 @@
     }
   ],
   "provisioners": [
-    { 
-      "type": "shell",
-      "scripts": [
-        "add-provisioner-user.sh"
-       ], 
-      "execute_command": "sh '{{.Path}}'"
-    }, 
     {
       "type": "shell",
       "scripts": [
