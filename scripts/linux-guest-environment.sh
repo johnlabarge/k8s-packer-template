@@ -8,6 +8,7 @@ rpm --import yum-key.gpg --quiet
 rpm --import rpm-package-key.gpg --quiet
 rm yum-key.gpg
 rm rpm-package-key.gpg 
+yum updateinfo
 OS_RELEASE_FILE="/etc/redhat-release"
 if [ ! -f $OS_RELEASE_FILE ]; then
    OS_RELEASE_FILE="/etc/centos-release"
@@ -23,12 +24,12 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
-sudo yum updateinfo
-declare -a PKG_LIST=(python-google-compute-engine \
+yum updateinfo
+yum install -y python-google-compute-engine \
 google-compute-engine-oslogin \
-google-compute-engine)
+google-compute-engine
 for pkg in ${PKG_LIST[@]}; do
-   sudo yum install -y $pkg
+   yum install -y $pkg
 done
 sudo yum -y update
 ### END Linux Guest Environment #######
