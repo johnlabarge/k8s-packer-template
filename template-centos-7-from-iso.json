@@ -52,8 +52,8 @@
         "type": "shell-local",
         "inline": [
          "gsutil cp output/disk.raw.tar.gz {{user `gcs_bucket`}}/{{user `image_family`}}-${BUILD_NUMBER}-partial.tar.gz", 
-         "gcloud compute images create {{user `image_family`}}-${BUILD_NUMBER}-partial \\", 
-         "--source-uri={{user `gcs_bucket`}}/{{user `image_family`}}-${BUILD_NUMBER}-partial.tar.gz \\",
+         "gcloud compute images create {{user `image_family`}}-${BUILD_NUMBER} \\", 
+         "--source-uri={{user `gcs_bucket`}}/{{user `image_family`}}-${BUILD_NUMBER}.tar.gz \\",
          "--family={{user `image_family`}}"
         ]
       }
