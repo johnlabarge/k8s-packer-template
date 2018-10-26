@@ -28,9 +28,6 @@ yum updateinfo
 yum install -y python-google-compute-engine \
 google-compute-engine-oslogin \
 google-compute-engine
-for pkg in ${PKG_LIST[@]}; do
-   yum install -y $pkg
-done
 sudo yum -y update
 ### END Linux Guest Environment #######
 
